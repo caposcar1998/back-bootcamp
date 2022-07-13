@@ -24,6 +24,9 @@ func NewUserService(repository IUserRepository) *UserService {
 }
 
 func (s *UserService) InsertUser(user *models.User) (*models.User, error) {
+	if err := user.ValidUser(); err != nil {
+		return nil, err
+	}
 	user, err := s.repository.AddUser(user)
 	return user, err
 }
@@ -49,4 +52,17 @@ func (s *UserService) UpdateUser(idUser int, user *models.User) (*models.User, e
 	}
 	userUpdate, err := s.repository.UpdateUser(idUser, user)
 	return userUpdate, err
+}
+
+func (s *UserService) DeleteUser(idUser int) error {
+	var err error
+	found, err := s.GetUser(idUser)
+	if err != nil {
+		return err
+	}
+	if found == nil {
+		return fmt.Errorf("any employee was found with given id")
+	}
+	err = s.repository.DeleteUser(idUser)
+	return err
 }
