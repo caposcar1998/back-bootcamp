@@ -2,7 +2,6 @@ package services
 
 import (
 	"backbootcamp/models"
-	"fmt"
 )
 
 type IUserRepository interface {
@@ -42,26 +41,21 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 }
 
 func (s *UserService) UpdateUser(idUser int, user *models.User) (*models.User, error) {
-	var err error
+	if err := user.ValidUser(); err != nil {
+		return nil, err
+	}
 	found, err := s.GetUser(idUser)
 	if err != nil {
 		return found, err
-	}
-	if found == nil {
-		return nil, fmt.Errorf("any employee was found with given id")
 	}
 	userUpdate, err := s.repository.UpdateUser(idUser, user)
 	return userUpdate, err
 }
 
 func (s *UserService) DeleteUser(idUser int) error {
-	var err error
-	found, err := s.GetUser(idUser)
+	_, err := s.GetUser(idUser)
 	if err != nil {
 		return err
-	}
-	if found == nil {
-		return fmt.Errorf("any employee was found with given id")
 	}
 	err = s.repository.DeleteUser(idUser)
 	return err
