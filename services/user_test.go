@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+// ------------- CREATE tests -------------
 // Create user with complete information
 func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -112,7 +113,7 @@ func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 	})
 }
 
-// user with no info should error
+// Create user with no information
 func Test_InsertUserWhenNoInfoShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -125,7 +126,7 @@ func Test_InsertUserWhenNoInfoShouldError(t *testing.T) {
 	assert.Error(t, err, "firstname missing")
 }
 
-// user with incorrect password format should error
+// Create user with incorrect format password
 func Test_InsertUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -144,8 +145,10 @@ func Test_InsertUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	assert.Error(t, err, "invalid password")
 }
 
-// TODO: user password without cypher should error
+// TODO: Create user with password not decoded
 
+// ------------- READ tests -------------
+// Read user without id
 func Test_GetAllUsersShouldSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -211,6 +214,7 @@ func Test_ReadUserWhenInvalidIdShouldError(t *testing.T) {
 	assert.EqualError(t, err, "any employee was found with given id")
 }
 
+// ------------- UPDATE tests -------------
 // Edit user with complete information
 func Test_UpdateUserWhenValidShouldSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -239,7 +243,7 @@ func Test_UpdateUserWhenValidShouldSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-// user with incomplete info should error
+// Edit user with incomplete information
 func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -307,7 +311,7 @@ func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 	})
 }
 
-// user with no-info should error
+// Edit user with no information
 func Test_UpdateUserWhenNoInfoShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -320,7 +324,7 @@ func Test_UpdateUserWhenNoInfoShouldError(t *testing.T) {
 	assert.Error(t, err, "firstname missing")
 }
 
-// user with incorrect password format should error
+// Edit user with incorrect format password
 func Test_UpdateUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -339,9 +343,10 @@ func Test_UpdateUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	assert.Error(t, err, "invalid password")
 }
 
-// TODO: user password without cypher should error
+// TODO: Edit user with not decoded password
 
-// delete with existing id should success
+// ------------- DELETE tests -------------
+// Delete user with existing id
 func Test_DeleteUserWhenValidIdShouldSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -368,7 +373,7 @@ func Test_DeleteUserWhenValidIdShouldSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-// delete with no-existing id should error
+// Delete user with no existing id
 func Test_DeleteUserWhenInvalidIdShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
