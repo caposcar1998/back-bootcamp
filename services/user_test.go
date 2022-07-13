@@ -14,20 +14,24 @@ func TestUserService_InsertUser(t *testing.T) {
 
 	r := repositories.NewMockIUserRepository(ctrl)
 
-	type fields struct {
-		repository IUserRepository
+	userWCI := &models.User{
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Username:  "alamriosx",
+		Password:  "undecodedpassword",
 	}
+
 	type args struct {
 		user *models.User
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    *models.User
 		wantErr string
 	}{
-		{name: "user with complete info should success", fields: fields{repository: r}, args: args{user: nil}, want: nil, wantErr: ""},
+		{name: "user with complete info should success", args: args{user: userWCI}, want: userWCI, wantErr: ""},
 		// user with incomplete info should error
 		// user with no info should error
 		// user with incorrect password format should error
@@ -37,9 +41,12 @@ func TestUserService_InsertUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &UserService{
-				repository: tt.fields.repository,
+				repository: r,
 			}
 			got, err := s.InsertUser(tt.args.user)
+
+			r.EXPECT().
+
 			if tt.wantErr != "" && tt.wantErr != err.Error() {
 				t.Errorf("InsertUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -60,7 +67,9 @@ func TestUserService_GetAllUsers(t *testing.T) {
 		fields  fields
 		want    []models.User
 		wantErr bool
-	}{}
+	}{
+		// success case
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &UserService{
