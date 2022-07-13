@@ -3,14 +3,15 @@ package services
 import (
 	"backbootcamp/models"
 	"backbootcamp/repositories"
+	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"reflect"
 	"testing"
 )
 
+// ------------- CREATE tests -------------
 // Create user with complete information
-func Test_InsertUserWhenValidUserShouldSuccess(t *testing.T) {
+func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	r := repositories.NewMockIUserRepository(ctrl)
@@ -45,7 +46,7 @@ func Test_InsertUserWhenValidUserShouldSuccess(t *testing.T) {
 }
 
 // Create user with incomplete information
-func Test_InsertUserWhenIncompleteUserShouldError(t *testing.T) {
+func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	r := repositories.NewMockIUserRepository(ctrl)
@@ -112,7 +113,7 @@ func Test_InsertUserWhenIncompleteUserShouldError(t *testing.T) {
 	})
 }
 
-// user with no info should error
+// Create user with no information
 func Test_InsertUserWhenNoInfoShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -125,7 +126,7 @@ func Test_InsertUserWhenNoInfoShouldError(t *testing.T) {
 	assert.Error(t, err, "firstname missing")
 }
 
-// user with incorrect password format should error
+// Create user with incorrect format password
 func Test_InsertUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -144,133 +145,245 @@ func Test_InsertUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 	assert.Error(t, err, "invalid password")
 }
 
-// TODO: user password without cypher should error
+// TODO: Create user with password not decoded
 
-func TestUserService_GetAllUsers(t *testing.T) {
-	type fields struct {
-		repository IUserRepository
+// ------------- READ tests -------------
+// Read user without id
+func Test_GetAllUsersShouldSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+	expected := []models.User{
+		{
+			Id:        1,
+			FirstName: "Alam Yael",
+			LastName:  "Ríos Altamirano",
+			Email:     "alamriosx@gmail.com",
+			Username:  "alamriosx",
+			Password:  "undecodedpassword",
+		},
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    []models.User
-		wantErr bool
-	}{
-		// success case
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &UserService{
-				repository: tt.fields.repository,
-			}
-			got, err := s.GetAllUsers()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetAllUsers() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetAllUsers() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	s := NewUserService(r)
+	r.EXPECT().
+		GetAllUsers().
+		Return(expected, nil)
+
+	got, err := s.GetAllUsers()
+	assert.Equal(t, got, expected)
+	assert.NoError(t, err)
 }
 
-func TestUserService_GetUser(t *testing.T) {
-	type fields struct {
-		repository IUserRepository
+// Read user with existing id
+func Test_ReadUserWhenValidIdShouldSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	expected := &models.User{
+		Id:        1,
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Username:  "alamriosx",
+		Password:  "undecodedpassword",
 	}
-	type args struct {
-		idUser int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *models.User
-		wantErr bool
-	}{
-		// read with existing id should success
-		// read with no-existing id should error
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &UserService{
-				repository: tt.fields.repository,
-			}
-			got, err := s.GetUser(tt.args.idUser)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetUser() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetUser() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+	r.EXPECT().
+		GetUserById(1).
+		Return(expected, nil)
+
+	got, err := s.GetUser(1)
+	assert.Equal(t, got, expected)
+	assert.NoError(t, err)
 }
 
-func TestUserService_UpdateUser(t *testing.T) {
-	type fields struct {
-		repository IUserRepository
-	}
-	type args struct {
-		idUser int
-		user   *models.User
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *models.User
-		wantErr bool
-	}{
-		// user with complete info should success
-		// user with incomplete info should error
-		// user with no-info should error
-		// user with incorrect password format should error
-		// user password without cypher should error
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &UserService{
-				repository: tt.fields.repository,
-			}
-			got, err := s.UpdateUser(tt.args.idUser, tt.args.user)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("UpdateUser() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+// Read user with no existing id
+func Test_ReadUserWhenInvalidIdShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+	r.EXPECT().
+		GetUserById(1).
+		Return(nil, fmt.Errorf("any employee was found with given id"))
+
+	got, err := s.GetUser(1)
+	assert.Nil(t, got)
+	assert.EqualError(t, err, "any employee was found with given id")
 }
 
-func TestUserService_DeleteUser(t *testing.T) {
-	type fields struct {
-		repository IUserRepository
+// ------------- UPDATE tests -------------
+// Edit user with complete information
+func Test_UpdateUserWhenValidShouldSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	user := &models.User{
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Username:  "alamriosx",
+		Password:  "undecodedpassword",
 	}
-	type args struct {
-		idUser int
+
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+
+	r.EXPECT().
+		GetUserById(1).
+		Return(user, nil)
+
+	r.EXPECT().
+		UpdateUser(1, user).
+		Return(user, nil)
+
+	got, err := s.UpdateUser(1, user)
+	assert.Equal(t, got, user)
+	assert.NoError(t, err)
+}
+
+// Edit user with incomplete information
+func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+
+	t.Run("firstname missing", func(t *testing.T) {
+		user := &models.User{
+			LastName: "Ríos Altamirano",
+			Email:    "alamriosx@gmail.com",
+			Username: "alamriosx",
+			Password: "undecodedpassword",
+		}
+		got, err := s.UpdateUser(1, user)
+		assert.Nil(t, got)
+		assert.EqualError(t, err, "fistname missing")
+	})
+
+	t.Run("lastname missing", func(t *testing.T) {
+		user := &models.User{
+			FirstName: "Alam Yael",
+			Email:     "alamriosx@gmail.com",
+			Username:  "alamriosx",
+			Password:  "undecodedpassword",
+		}
+		got, err := s.UpdateUser(1, user)
+		assert.Nil(t, got)
+		assert.EqualError(t, err, "lastname missing")
+	})
+
+	t.Run("email missing", func(t *testing.T) {
+		user := &models.User{
+			FirstName: "Alam Yael",
+			LastName:  "Ríos Altamirano",
+			Username:  "alamriosx",
+			Password:  "undecodedpassword",
+		}
+		got, err := s.UpdateUser(1, user)
+		assert.Nil(t, got)
+		assert.EqualError(t, err, "email missing")
+	})
+
+	t.Run("username missing", func(t *testing.T) {
+		user := &models.User{
+			FirstName: "Alam Yael",
+			LastName:  "Ríos Altamirano",
+			Email:     "alamriosx@gmail.com",
+			Password:  "undecodedpassword",
+		}
+		got, err := s.UpdateUser(1, user)
+		assert.Nil(t, got)
+		assert.EqualError(t, err, "username missing")
+	})
+
+	t.Run("password missing", func(t *testing.T) {
+		user := &models.User{
+			FirstName: "Alam Yael",
+			LastName:  "Ríos Altamirano",
+			Email:     "alamriosx@gmail.com",
+			Username:  "alamriosx",
+		}
+		got, err := s.UpdateUser(1, user)
+		assert.Nil(t, got)
+		assert.EqualError(t, err, "password missing")
+	})
+}
+
+// Edit user with no information
+func Test_UpdateUserWhenNoInfoShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+
+	user := &models.User{}
+	got, err := s.UpdateUser(1, user)
+	assert.Nil(t, got)
+	assert.Error(t, err, "firstname missing")
+}
+
+// Edit user with incorrect format password
+func Test_UpdateUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+
+	user := &models.User{
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Username:  "alamriosx",
+		Password:  "123",
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// delete with existing id should success
-		// delete with no-existing id should error
+	got, err := s.UpdateUser(1, user)
+	assert.Nil(t, got)
+	assert.Error(t, err, "invalid password")
+}
+
+// TODO: Edit user with not decoded password
+
+// ------------- DELETE tests -------------
+// Delete user with existing id
+func Test_DeleteUserWhenValidIdShouldSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	expected := &models.User{
+		Id:        1,
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Username:  "alamriosx",
+		Password:  "undecodedpassword",
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &UserService{
-				repository: tt.fields.repository,
-			}
-			if err := s.DeleteUser(tt.args.idUser); (err != nil) != tt.wantErr {
-				t.Errorf("DeleteUser() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+
+	r := repositories.NewMockIUserRepository(ctrl)
+	s := NewUserService(r)
+	r.EXPECT().
+		GetUserById(1).
+		Return(expected, nil)
+
+	r.EXPECT().
+		DeleteUser(1).
+		Return(nil)
+
+	err := s.DeleteUser(1)
+	assert.NoError(t, err)
+}
+
+// Delete user with no existing id
+func Test_DeleteUserWhenInvalidIdShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+
+	s := NewUserService(r)
+	r.EXPECT().
+		GetUserById(1).
+		Return(nil, fmt.Errorf("any employee was found with given id"))
+
+	err := s.DeleteUser(1)
+	assert.EqualError(t, err, "any employee was found with given id")
 }
