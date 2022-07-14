@@ -1,6 +1,9 @@
 # Bootcamp exercise - Backend application
 This repository stores backend application source code for the bootcamp final exercise.
 
+## database
+Package for database connection implementations
+
 ## models
 Package for business models
 
