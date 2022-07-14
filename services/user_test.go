@@ -9,6 +9,67 @@ import (
 	"testing"
 )
 
+// ------------- Login tests -------------
+// Success login
+func Test_LoginWhenValidShouldSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+
+	params := struct {
+		email    string
+		password string
+	}{
+		email:    "alamriosx",
+		password: "undecodedpassword",
+	}
+
+	user := &models.User{
+		Id:        1,
+		FirstName: "Alam Yael",
+		LastName:  "Ríos Altamirano",
+		Email:     "alamriosx@gmail.com",
+		Password:  "undecodedpassword",
+	}
+
+	s := NewUserService(r)
+
+	r.EXPECT().
+		Login(params.email, params.password).
+		Return(user, nil)
+
+	got, err := s.Login(params.email, params.password)
+
+	assert.Equal(t, got, user)
+	assert.NoError(t, err)
+}
+
+// Fail login
+func Test_LoginWhenInvalidShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+
+	params := struct {
+		email    string
+		password string
+	}{
+		email:    "alamriosx",
+		password: "undecodedpassword",
+	}
+
+	s := NewUserService(r)
+
+	r.EXPECT().
+		Login(params.email, params.password).
+		Return(nil, fmt.Errorf("no user found"))
+
+	got, err := s.Login(params.email, params.password)
+
+	assert.Nil(t, got)
+	assert.Error(t, err)
+}
+
 // ------------- CREATE tests -------------
 // Create user with complete information
 func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
@@ -20,7 +81,6 @@ func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "undecodedpassword",
 	}
 
@@ -29,7 +89,6 @@ func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "undecodedpassword",
 	}
 
@@ -56,7 +115,6 @@ func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			LastName: "Ríos Altamirano",
 			Email:    "alamriosx@gmail.com",
-			Username: "alamriosx",
 			Password: "undecodedpassword",
 		}
 		got, err := s.InsertUser(user)
@@ -68,7 +126,6 @@ func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			Email:     "alamriosx@gmail.com",
-			Username:  "alamriosx",
 			Password:  "undecodedpassword",
 		}
 		got, err := s.InsertUser(user)
@@ -80,7 +137,6 @@ func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			LastName:  "Ríos Altamirano",
-			Username:  "alamriosx",
 			Password:  "undecodedpassword",
 		}
 		got, err := s.InsertUser(user)
@@ -88,24 +144,11 @@ func Test_InsertUserWhenIncompleteShouldError(t *testing.T) {
 		assert.EqualError(t, err, "email missing")
 	})
 
-	t.Run("username missing", func(t *testing.T) {
-		user := &models.User{
-			FirstName: "Alam Yael",
-			LastName:  "Ríos Altamirano",
-			Email:     "alamriosx@gmail.com",
-			Password:  "undecodedpassword",
-		}
-		got, err := s.InsertUser(user)
-		assert.Nil(t, got)
-		assert.EqualError(t, err, "username missing")
-	})
-
 	t.Run("password missing", func(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			LastName:  "Ríos Altamirano",
 			Email:     "alamriosx@gmail.com",
-			Username:  "alamriosx",
 		}
 		got, err := s.InsertUser(user)
 		assert.Nil(t, got)
@@ -137,7 +180,6 @@ func Test_InsertUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "123",
 	}
 	got, err := s.InsertUser(user)
@@ -159,7 +201,6 @@ func Test_GetAllUsersShouldSuccess(t *testing.T) {
 			FirstName: "Alam Yael",
 			LastName:  "Ríos Altamirano",
 			Email:     "alamriosx@gmail.com",
-			Username:  "alamriosx",
 			Password:  "undecodedpassword",
 		},
 	}
@@ -183,7 +224,6 @@ func Test_ReadUserWhenValidIdShouldSuccess(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "undecodedpassword",
 	}
 
@@ -223,7 +263,6 @@ func Test_UpdateUserWhenValidShouldSuccess(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "undecodedpassword",
 	}
 
@@ -254,7 +293,6 @@ func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			LastName: "Ríos Altamirano",
 			Email:    "alamriosx@gmail.com",
-			Username: "alamriosx",
 			Password: "undecodedpassword",
 		}
 		got, err := s.UpdateUser(1, user)
@@ -266,7 +304,6 @@ func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			Email:     "alamriosx@gmail.com",
-			Username:  "alamriosx",
 			Password:  "undecodedpassword",
 		}
 		got, err := s.UpdateUser(1, user)
@@ -278,7 +315,6 @@ func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			LastName:  "Ríos Altamirano",
-			Username:  "alamriosx",
 			Password:  "undecodedpassword",
 		}
 		got, err := s.UpdateUser(1, user)
@@ -286,24 +322,11 @@ func Test_UpdateUserWhenIncompleteShouldError(t *testing.T) {
 		assert.EqualError(t, err, "email missing")
 	})
 
-	t.Run("username missing", func(t *testing.T) {
-		user := &models.User{
-			FirstName: "Alam Yael",
-			LastName:  "Ríos Altamirano",
-			Email:     "alamriosx@gmail.com",
-			Password:  "undecodedpassword",
-		}
-		got, err := s.UpdateUser(1, user)
-		assert.Nil(t, got)
-		assert.EqualError(t, err, "username missing")
-	})
-
 	t.Run("password missing", func(t *testing.T) {
 		user := &models.User{
 			FirstName: "Alam Yael",
 			LastName:  "Ríos Altamirano",
 			Email:     "alamriosx@gmail.com",
-			Username:  "alamriosx",
 		}
 		got, err := s.UpdateUser(1, user)
 		assert.Nil(t, got)
@@ -335,7 +358,6 @@ func Test_UpdateUserWhenIncorrectPasswordFormatShouldError(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "123",
 	}
 	got, err := s.UpdateUser(1, user)
@@ -355,7 +377,6 @@ func Test_DeleteUserWhenValidIdShouldSuccess(t *testing.T) {
 		FirstName: "Alam Yael",
 		LastName:  "Ríos Altamirano",
 		Email:     "alamriosx@gmail.com",
-		Username:  "alamriosx",
 		Password:  "undecodedpassword",
 	}
 
