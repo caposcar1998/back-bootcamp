@@ -5,6 +5,7 @@ import (
 )
 
 type IUserRepository interface {
+	Login(email, password string) (*models.User, error)
 	AddUser(user *models.User) (*models.User, error)
 	GetUserById(idUser int) (*models.User, error)
 	GetAllUsers() ([]models.User, error)
@@ -20,6 +21,11 @@ func NewUserService(repository IUserRepository) *UserService {
 	return &UserService{
 		repository: repository,
 	}
+}
+
+func (s *UserService) Login(email, password string) (*models.User, error) {
+	user, err := s.repository.Login(email, password)
+	return user, err
 }
 
 func (s *UserService) InsertUser(user *models.User) (*models.User, error) {

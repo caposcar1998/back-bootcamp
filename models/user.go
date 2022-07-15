@@ -7,7 +7,6 @@ type User struct {
 	FirstName string
 	LastName  string
 	Email     string
-	Username  string
 	Password  string
 }
 
@@ -20,9 +19,6 @@ func (u *User) ValidUser() error {
 	}
 	if u.Email == "" {
 		return fmt.Errorf("email missing")
-	}
-	if u.Username == "" {
-		return fmt.Errorf("username missing")
 	}
 	if u.Password == "" {
 		return fmt.Errorf("password missing")

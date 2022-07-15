@@ -5,8 +5,9 @@ package repositories
 
 import (
 	models "backbootcamp/models"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockIUserRepository is a mock of IUserRepository interface.
@@ -89,6 +90,21 @@ func (m *MockIUserRepository) GetUserById(arg0 int) (*models.User, error) {
 func (mr *MockIUserRepositoryMockRecorder) GetUserById(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserById", reflect.TypeOf((*MockIUserRepository)(nil).GetUserById), arg0)
+}
+
+// Login mocks base method.
+func (m *MockIUserRepository) Login(arg0, arg1 string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Login", arg0, arg1)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Login indicates an expected call of Login.
+func (mr *MockIUserRepositoryMockRecorder) Login(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockIUserRepository)(nil).Login), arg0, arg1)
 }
 
 // UpdateUser mocks base method.
