@@ -24,7 +24,7 @@ func NewUserService(repository IUserRepository) *UserService {
 }
 
 func (s *UserService) Login(email, password string) (*models.User, error) {
-	user, err := s.repository.Login(email, password)
+	user, err := s.repository.Loggit in(email, password)
 	return user, err
 }
 
