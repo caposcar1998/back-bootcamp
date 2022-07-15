@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	db := database.NewMySQLConn()
+	db, _ := database.NewMySQLConn()
 	defer db.Close()
 
 	userRepo := repositories.NewUserRepository(db)
@@ -22,7 +22,7 @@ func main() {
 	userController := controllers.NewUserController(userService)
 
 	router := mux.NewRouter()
-	fmt.Println("Server is running on Port 8002")
+	fmt.Println("Server is running on Port 8080")
 
 	router.HandleFunc("/api/v1/users", userController.GetUsersList).Methods("GET")
 	router.HandleFunc("/api/v1/users/{id}", userController.GetUser).Methods("GET")
@@ -30,5 +30,5 @@ func main() {
 	router.HandleFunc("/api/v1/users/{id}", userController.UpdateUser).Methods("PUT")
 	router.HandleFunc("/api/v1/users/{id}", userController.DeleteUser).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":8002", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -20,6 +20,19 @@ func NewUserController(userService *services.UserService) *UserController {
 	}
 }
 
+// func (h *UserController) Login(w http.ResponseWriter, r *http.Request) {
+// 	var err error
+// 	reqBody, _ := ioutil.ReadAll(r.Body)
+// 	json.Unmarshal(reqBody, &userToCreate)
+// 	email := "luis"
+// 	password := "luis"
+// 	user, err := h.userService.Login(email, password)
+// 	if err != nil {
+// 		fmt.Printf("ERROR - %s", err)
+// 	}
+// 	json.NewEncoder(w).Encode(user)
+// }
+
 func (h *UserController) GetUsersList(w http.ResponseWriter, r *http.Request) {
 	var userList []models.User
 	var err error
