@@ -29,6 +29,7 @@ func main() {
 	router.HandleFunc("/api/v1/users", userController.CreateUser).Methods("POST")
 	router.HandleFunc("/api/v1/users/{id}", userController.UpdateUser).Methods("PUT")
 	router.HandleFunc("/api/v1/users/{id}", userController.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/api/v1/login", userController.Login).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

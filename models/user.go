@@ -3,11 +3,11 @@ package models
 import "fmt"
 
 type User struct {
-	Id        int
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
+	Id        int    `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 func (u *User) ValidUser() error {
