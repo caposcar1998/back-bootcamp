@@ -17,12 +17,12 @@ data "aws_subnet_ids" "all" {
 
 ### ECR
 
-resource "aws_ecr_repository" "hello-world" {
-  name                 = "hello-world"
+resource "aws_ecr_repository" "gobootcamp" {
+  name                 = "gobootcamp"
   image_tag_mutability = "MUTABLE"
 
   tags = {
-    project = "hello-world"
+    project = "go-bootcamp"
   }
 }
 
@@ -56,7 +56,7 @@ resource "aws_iam_role" "ec2_role_hello_world" {
 EOF
 
   tags = {
-    project = "hello-world"
+    project = "gobootcamp"
   }
 }
 
@@ -109,10 +109,15 @@ resource "aws_instance" "web" {
   iam_instance_profile = aws_iam_instance_profile.ec2_profile_hello_world.name
 
   tags = {
-    project = "hello-world"
+    project = "gobootcamp"
   }
 
   monitoring              = true
   disable_api_termination = false
   ebs_optimized           = true
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
 }

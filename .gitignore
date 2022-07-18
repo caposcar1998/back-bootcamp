@@ -15,4 +15,4 @@
 # vendor/
 
 .idea
-.terraform
+.terraform/
