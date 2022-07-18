@@ -70,6 +70,32 @@ func Test_LoginWhenInvalidShouldError(t *testing.T) {
 	assert.Error(t, err)
 }
 
+// Fail login
+func Test_LoginWhenEmptyShouldError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	r := repositories.NewMockIUserRepository(ctrl)
+
+	params := struct {
+		email    string
+		password string
+	}{
+		email:    "alamriosx",
+		password: "undecodedpassword",
+	}
+
+	s := NewUserService(r)
+
+	r.EXPECT().
+		Login(params.email, params.password).
+		Return(nil, nil)
+
+	got, err := s.Login(params.email, params.password)
+
+	assert.Nil(t, got)
+	assert.Error(t, err)
+}
+
 // ------------- CREATE tests -------------
 // Create user with complete information
 func Test_InsertUserWhenValidShouldSuccess(t *testing.T) {
