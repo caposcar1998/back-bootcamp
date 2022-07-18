@@ -2,6 +2,7 @@ package services
 
 import (
 	"backbootcamp/models"
+	"fmt"
 )
 
 type IUserRepository interface {
@@ -25,6 +26,9 @@ func NewUserService(repository IUserRepository) *UserService {
 
 func (s *UserService) Login(email, password string) (*models.User, error) {
 	user, err := s.repository.Login(email, password)
+	if user == nil {
+		return nil, fmt.Errorf("invalid user credentials")
+	}
 	return user, err
 }
 

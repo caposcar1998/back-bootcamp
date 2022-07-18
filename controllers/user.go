@@ -4,7 +4,6 @@ import (
 	"backbootcamp/models"
 	"backbootcamp/services"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -27,9 +26,11 @@ func (h *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &userToLogin)
 	user, err := h.userService.Login(userToLogin.Email, userToLogin.Password)
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode(user)
 	}
-	json.NewEncoder(w).Encode(user)
+
 }
 
 func (h *UserController) GetUsersList(w http.ResponseWriter, r *http.Request) {
@@ -37,9 +38,10 @@ func (h *UserController) GetUsersList(w http.ResponseWriter, r *http.Request) {
 	var err error
 	userList, err = h.userService.GetAllUsers()
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode(userList)
 	}
-	json.NewEncoder(w).Encode(userList)
 }
 
 func (h *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -50,9 +52,10 @@ func (h *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	idInt, _ := strconv.Atoi(idStr)
 	user, err = h.userService.GetUser(idInt)
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode(user)
 	}
-	json.NewEncoder(w).Encode(user)
 }
 
 func (h *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -62,9 +65,11 @@ func (h *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &userToCreate)
 	user, err := h.userService.InsertUser(&userToCreate)
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(user)
 	}
-	json.NewEncoder(w).Encode(user)
 }
 
 func (h *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -77,9 +82,10 @@ func (h *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &userToUpdate)
 	user, err := h.userService.UpdateUser(idInt, &userToUpdate)
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode(user)
 	}
-	json.NewEncoder(w).Encode(user)
 }
 
 func (h *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -89,6 +95,8 @@ func (h *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	idInt, _ := strconv.Atoi(idStr)
 	err = h.userService.DeleteUser(idInt)
 	if err != nil {
-		fmt.Printf("ERROR - %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		w.WriteHeader(http.StatusOK)
 	}
 }
