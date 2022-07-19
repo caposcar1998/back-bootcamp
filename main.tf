@@ -26,6 +26,15 @@ resource "aws_ecr_repository" "gobootcamp" {
   }
 }
 
+resource "aws_ecr_repository" "jsbootcamp" {
+  name                 = "jsbootcamp"
+  image_tag_mutability = "MUTABLE"
+
+  tags = {
+    project = "js-bootcamp"
+  }
+}
+
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
   owners      = ["amazon"]
@@ -143,7 +152,7 @@ resource "aws_instance" "web" {
     project = "gobootcamp"
     "Name" = "gobootcamp"
   }
-  
+
   key_name = aws_key_pair.deployer.key_name
     vpc_security_group_ids = [
         aws_security_group.allow_ssh.id
