@@ -88,7 +88,6 @@ EOF
 }
 
 variable "ssh_key_path" {}
-variable "vpc_id" {}
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
@@ -98,7 +97,6 @@ resource "aws_key_pair" "deployer" {
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow SSH inbound traffic"
-  vpc_id      = var.vpc_id
 
   ingress {
     description = "SSH from VPC"
@@ -145,6 +143,7 @@ resource "aws_instance" "web" {
     project = "gobootcamp"
     "Name" = "gobootcamp"
   }
+  
   key_name = aws_key_pair.deployer.key_name
     vpc_security_group_ids = [
         aws_security_group.allow_ssh.id

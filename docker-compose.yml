@@ -1,8 +1,22 @@
 version: "3.9"
 services:
-  app:
+  nginx-server:
+    image: nginx:1.21.6-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+    networks:
+      - fintechnet
+    depends_on:
+      - api
+  api:
     build:
       dockerfile: Dockerfile
       context: .
     ports:
       - 8080:8080
+    networks:
+      - fintechnet
+networks:
+  fintechnet:
