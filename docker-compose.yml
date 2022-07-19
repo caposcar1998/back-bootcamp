@@ -9,13 +9,21 @@ services:
     networks:
       - fintechnet
     depends_on:
-      - api
-  api:
-    build:
-      dockerfile: Dockerfile
-      context: .
+      - backend
+  backend:
+    image: ${BACK_IMAGE_TAG}
+    container_name: "go-backend"
     ports:
       - 8080:8080
+    networks:
+      - fintechnet
+  frontend:
+    image: ${FRONT_IMAGE_TAG}
+    container_name: "js-frontend"
+    environment:
+      - REACT_APP_BACKEND_API=localhost
+    ports:
+      - 3000:3000
     networks:
       - fintechnet
 networks:
