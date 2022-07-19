@@ -14,4 +14,4 @@ RUN go build -o /go-bootcamp
 
 EXPOSE 8080
 
-CMD [ "/go-bootcamp" ]
+CMD ["/go-bootcamp"]
