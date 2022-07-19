@@ -1,6 +1,6 @@
 # main.tf
 provider "aws" {
-  region = "us-east-2"
+  region = "us-east-1"
 }
 
 terraform {
@@ -36,8 +36,8 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-resource "aws_iam_role" "ec2_role_hello_world" {
-  name = "ec2_role_hello_world"
+resource "aws_iam_role" "ec2_role_gobootcamp" {
+  name = "ec2_role_gobootcamp"
 
   assume_role_policy = <<EOF
 {
@@ -60,14 +60,14 @@ EOF
   }
 }
 
-resource "aws_iam_instance_profile" "ec2_profile_hello_world" {
-  name = "ec2_profile_hello_world"
-  role = aws_iam_role.ec2_role_hello_world.name
+resource "aws_iam_instance_profile" "ec2_profile_gobootcamp" {
+  name = "ec2_profile_gobootcamp"
+  role = aws_iam_role.ec2_role_gobootcamp.name
 }
 
 resource "aws_iam_role_policy" "ec2_policy" {
   name = "ec2_policy"
-  role = aws_iam_role.ec2_role_hello_world.id
+  role = aws_iam_role.ec2_role_gobootcamp.id
 
   policy = <<EOF
 {
@@ -85,6 +85,39 @@ resource "aws_iam_role_policy" "ec2_policy" {
   ]
 }
 EOF
+}
+
+variable "ssh_key_path" {}
+variable "vpc_id" {}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = file(var.ssh_key_path)
+}
+
+resource "aws_security_group" "allow_ssh" {
+  name        = "allow_ssh"
+  description = "Allow SSH inbound traffic"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "SSH from VPC"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_ssh"
+  }
 }
 
 resource "aws_instance" "web" {
@@ -106,18 +139,18 @@ resource "aws_instance" "web" {
     sudo chmod +x /usr/local/bin/docker-compose
   EOF
 
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile_hello_world.name
+  iam_instance_profile = aws_iam_instance_profile.ec2_profile_gobootcamp.name
 
   tags = {
     project = "gobootcamp"
+    "Name" = "gobootcamp"
   }
+  key_name = aws_key_pair.deployer.key_name
+    vpc_security_group_ids = [
+        aws_security_group.allow_ssh.id
+    ]
 
   monitoring              = true
   disable_api_termination = false
   ebs_optimized           = true
-}
-
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
 }
