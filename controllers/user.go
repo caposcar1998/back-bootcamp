@@ -21,6 +21,8 @@ func NewUserController(userService *services.UserService) *UserController {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, DELETE, PUT, POST, OPTIONS")
 }
 
 func (h *UserController) Login(w http.ResponseWriter, r *http.Request) {
