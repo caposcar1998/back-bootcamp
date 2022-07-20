@@ -44,7 +44,7 @@ func (r *UserRepository) Login(email, password string) (*models.User, error) {
 }
 
 func (r *UserRepository) AddUser(u *models.User) (*models.User, error) {
-	stmtIns, err := r.db.Prepare("INSERT INTO user(firstname, lastname, email, password) VALUES(?, ?, ?, ?, ?)")
+	stmtIns, err := r.db.Prepare("INSERT INTO user(firstname, lastname, email, password) VALUES(?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
