@@ -58,6 +58,9 @@ func (s *UserService) UpdateUser(idUser int, user *models.User) (*models.User, e
 	if err != nil {
 		return found, err
 	}
+	if found == nil {
+		return nil, fmt.Errorf("invalid user id")
+	}
 	userUpdate, err := s.repository.UpdateUser(idUser, user)
 	return userUpdate, err
 }

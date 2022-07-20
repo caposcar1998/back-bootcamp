@@ -3,6 +3,7 @@ package repositories
 import (
 	"backbootcamp/models"
 	"database/sql"
+	"log"
 )
 
 type UserRepository struct {
@@ -66,6 +67,8 @@ func (r *UserRepository) AddUser(u *models.User) (*models.User, error) {
 
 func (r *UserRepository) GetUserById(idUser int) (*models.User, error) {
 	var user *models.User
+
+	log.Println("Getting user data with id" + string(idUser))
 
 	rows, err := r.db.Query("SELECT * FROM user u WHERE u.id=?", idUser)
 	if err != nil {
