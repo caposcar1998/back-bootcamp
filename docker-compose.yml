@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.7"
 services:
   nginx-server:
     image: nginx:1.21.6-alpine
@@ -7,7 +7,7 @@ services:
     volumes:
       - ./conf.d:/etc/nginx/conf.d
     networks:
-      - fintechnet
+      - bootcampnet
     depends_on:
       - backend
   backend:
@@ -16,15 +16,13 @@ services:
     ports:
       - 8080:8080
     networks:
-      - fintechnet
+      - bootcampnet
   frontend:
     image: ${FRONT_IMAGE_TAG}
     container_name: "js-frontend"
-    environment:
-      - REACT_APP_BACKEND_API=localhost
     ports:
       - 3000:3000
     networks:
-      - fintechnet
+      - bootcampnet
 networks:
-  fintechnet:
+  bootcampnet:
