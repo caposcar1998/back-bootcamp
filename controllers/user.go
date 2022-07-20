@@ -19,7 +19,12 @@ func NewUserController(userService *services.UserService) *UserController {
 	}
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func (h *UserController) Login(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var userToLogin models.User
 	var err error
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -34,6 +39,7 @@ func (h *UserController) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserController) GetUsersList(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var userList []models.User
 	var err error
 	userList, err = h.userService.GetAllUsers()
@@ -45,6 +51,7 @@ func (h *UserController) GetUsersList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var user *models.User
 	var err error
 	query := r.URL.Query()
@@ -59,6 +66,7 @@ func (h *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var userToCreate models.User
 	var err error
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -73,6 +81,7 @@ func (h *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var userToUpdate models.User
 	var err error
 	query := r.URL.Query()
@@ -89,6 +98,7 @@ func (h *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var err error
 	query := r.URL.Query()
 	idStr := query.Get("id")
